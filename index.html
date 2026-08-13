@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ME-RIISE QUIZ — Live Quiz Platform</title>
+  <meta name="description" content="ME-RIISE QUIZ — a premium real-time, Kahoot-style quiz platform by ME-RIISE Foundation, Malnad College of Engineering." />
+  <meta name="theme-color" content="#05070f" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .hero { padding: clamp(30px, 6vh, 70px) 0 60px; }
+    .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(24px, 5vw, 60px); align-items: center; }
+    @media (max-width: 900px){ .hero-grid { grid-template-columns: 1fr; } .hero { padding-top: 12px; } }
+    .eyebrow { display:inline-flex; gap:8px; align-items:center; }
+    .hero h1 { margin: 18px 0 14px; }
+    .hero p.lead { color: var(--text-200); font-size: clamp(1rem,2.2vw,1.2rem); max-width: 46ch; }
+    .hero-cta { display:flex; gap:14px; flex-wrap:wrap; margin-top: 26px; }
+    .join-card { position: relative; }
+    .join-card h2 { font-size: 1.5rem; margin-bottom: 4px; }
+    .join-card .sub { color: var(--text-300); font-size: 0.92rem; margin-bottom: 22px; }
+    .feature-row { display:grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap:16px; margin-top: 60px; }
+    .feature { padding: 22px; border-radius: var(--r-lg); }
+    .feature .ic { font-size: 1.7rem; }
+    .feature h4 { margin: 12px 0 6px; font-family: var(--font-display); }
+    .feature p { color: var(--text-300); font-size: 0.9rem; }
+    .steps { display:flex; gap:10px; flex-wrap:wrap; margin-top: 30px; }
+    .step { display:flex; align-items:center; gap:8px; font-size:0.82rem; color:var(--text-300); }
+    .step b { width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--grad-primary);color:#04122b;font-size:0.8rem; }
+    footer.site { text-align:center; padding: 40px 0 30px; color: var(--text-400); font-size: 0.85rem; }
+    .mode-pill { position: fixed; bottom: 14px; right: 14px; z-index: 50; }
+  </style>
+</head>
+<body class="app-bg">
+  <div class="bg-grid"></div>
+  <div class="bg-orbs"><span></span><span></span><span></span><span></span></div>
+
+  <div class="container">
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">MR</span>
+        <span class="stack">
+          <span class="brand-name">ME-RIISE <b>QUIZ</b></span>
+          <span class="brand-sub">Malnad College of Engineering</span>
+        </span>
+      </a>
+      <nav class="row gap-2">
+        <a class="btn btn-ghost btn-sm" href="host.html">📺 Host</a>
+        <a class="btn btn-ghost btn-sm" href="admin.html">🔐 Admin</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="anim-up">
+          <span class="chip chip-cyan eyebrow">⚡ Real-time · Live Multiplayer</span>
+          <h1>Play. Compete. <span class="gradient-text">Rise.</span></h1>
+          <p class="lead">A premium, Kahoot-style live quiz experience by the <b>ME-RIISE Foundation</b>. Join in seconds, answer live, climb the leaderboard, and win your certificate.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary btn-lg" href="#join">🎮 Join a Game</a>
+            <a class="btn btn-ghost btn-lg" href="host.html">Host a Quiz</a>
+          </div>
+          <div class="steps">
+            <span class="step"><b>1</b> Enter PIN</span>
+            <span class="step"><b>2</b> Your details</span>
+            <span class="step"><b>3</b> Answer live</span>
+            <span class="step"><b>4</b> Win 🏆</span>
+          </div>
+        </div>
+
+        <div class="join-card glass card-lg anim-up delay-2" id="join">
+          <h2>Enter Game PIN</h2>
+          <p class="sub">Ask your host for the 6-digit PIN shown on the big screen.</p>
+          <form id="joinForm" autocomplete="off">
+            <div class="field">
+              <input class="input pin-input mono" id="pin" inputmode="numeric" maxlength="6" placeholder="000000" aria-label="Game PIN" />
+            </div>
+            <button class="btn btn-primary btn-block btn-lg" type="submit" id="joinBtn">Enter →</button>
+          </form>
+          <div class="divider">or</div>
+          <button class="btn btn-ghost btn-block" id="scanBtn">📷 Scan QR Code</button>
+          <div id="scanBox" class="hidden" style="margin-top:16px"></div>
+        </div>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature glass anim-up delay-1"><div class="ic">⏱️</div><h4>Live Countdown</h4><p>Fast-paced questions with animated timers and speed-based scoring.</p></div>
+        <div class="feature glass anim-up delay-2"><div class="ic">📊</div><h4>Animated Leaderboard</h4><p>Watch ranks shuffle in real time after every single question.</p></div>
+        <div class="feature glass anim-up delay-3"><div class="ic">🏅</div><h4>Instant Certificates</h4><p>Top 3 win premium ME-RIISE certificates with QR verification.</p></div>
+        <div class="feature glass anim-up delay-4"><div class="ic">📥</div><h4>Export Results</h4><p>One click to Google Sheets & Excel-ready CSV for organisers.</p></div>
+      </div>
+    </section>
+
+    <footer class="site">
+      <div>ME-RIISE Foundation · Malnad College of Engineering, Hassan</div>
+      <div style="margin-top:6px">Verify a certificate → <a href="verify.html">meriise verify</a></div>
+    </footer>
+  </div>
+
+  <span class="chip mode-pill" id="modePill" title="Backend mode"></span>
+
+  <!-- Firebase compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <!-- App -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/firebase-service.js"></script>
+  <script>
+    const { $, toast } = MR.util;
+    const pin = $('#pin');
+
+    // backend mode indicator
+    const pill = $('#modePill');
+    if (MR.backendMode === 'firebase') { pill.textContent = '🟢 Live · Firebase'; pill.classList.add('chip-cyan'); }
+    else { pill.textContent = '🟡 Demo mode (local)'; pill.classList.add('chip-gold'); }
+
+    pin.addEventListener('input', () => { pin.value = pin.value.replace(/\D/g, '').slice(0, 6); });
+
+    // Prefill from ?pin= (QR deep links may hit index)
+    const qpin = MR.util.qs('pin');
+    if (qpin && /^\d{6}$/.test(qpin)) location.replace('student.html?pin=' + qpin);
+
+    $('#joinForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const val = pin.value.trim();
+      if (!/^\d{6}$/.test(val)) { toast('Enter a valid 6-digit PIN', 'err'); pin.focus(); return; }
+      const btn = $('#joinBtn'); btn.disabled = true; btn.textContent = 'Checking…';
+      try {
+        const exists = await MR.game.gameExists(val);
+        if (!exists) { toast('No live game found for that PIN', 'err'); btn.disabled = false; btn.textContent = 'Enter →'; return; }
+        location.href = 'student.html?pin=' + val;
+      } catch (err) { toast(err.message || 'Something went wrong', 'err'); btn.disabled = false; btn.textContent = 'Enter →'; }
+    });
+
+    // Optional in-app QR scanner (lazy loaded)
+    $('#scanBtn').addEventListener('click', async () => {
+      const box = $('#scanBox');
+      if (!box.classList.contains('hidden')) { box.classList.add('hidden'); box.innerHTML = ''; return; }
+      box.classList.remove('hidden');
+      box.innerHTML = '<div class="row gap-2 muted"><span class="spinner"></span> Starting camera…</div>';
+      try {
+        await loadScript('https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js');
+        box.innerHTML = '<div id="qrReader" style="width:100%"></div>';
+        const reader = new Html5Qrcode('qrReader');
+        await reader.start({ facingMode: 'environment' }, { fps: 10, qrbox: 220 }, (text) => {
+          reader.stop();
+          const m = String(text).match(/pin=(\d{6})/) || String(text).match(/(\d{6})/);
+          if (m) location.href = 'student.html?pin=' + m[1];
+          else toast('No PIN found in QR', 'err');
+        }, () => {});
+      } catch (err) {
+        box.innerHTML = '<p class="muted" style="font-size:.88rem">Camera unavailable. Please type the PIN instead.</p>';
+      }
+    });
+
+    function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.append(s); }); }
+  </script>
+</body>
+</html>

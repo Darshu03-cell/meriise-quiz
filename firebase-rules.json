@@ -1,0 +1,51 @@
+{
+  "rules": {
+    "quizzes": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "events": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "results": {
+      ".read": true,
+      ".write": true
+    },
+    "certificates": {
+      ".read": true,
+      ".write": true,
+      "$cid": {
+        ".validate": "newData.hasChildren(['name','rank','quiz','id'])"
+      }
+    },
+    "games": {
+      ".read": true,
+      "$pin": {
+        ".write": "!data.exists()",
+        "status":       { ".write": true },
+        "currentIndex": { ".write": true },
+        "resultsReady": { ".write": true },
+        "endedAt":      { ".write": true },
+        "state":        { ".write": true },
+        "players": {
+          ".write": true,
+          "$pid": {
+            ".validate": "!newData.exists() || newData.hasChildren(['name'])"
+          }
+        },
+        "answers": {
+          "$q": {
+            "$pid": {
+              ".write": "!data.exists()",
+              ".validate": "newData.hasChildren(['choice','at'])",
+              "choice": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3" },
+              "at":     { ".validate": "newData.val() === now" },
+              "$other": { ".validate": false }
+            }
+          }
+        }
+      }
+    }
+  }
+}
