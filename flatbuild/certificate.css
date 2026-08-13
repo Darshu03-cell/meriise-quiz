@@ -1,0 +1,88 @@
+/* ============================================================
+   ME-RIISE QUIZ — Premium A4 landscape certificate
+   ============================================================ */
+.cert-page { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding: 26px 16px 60px; }
+.cert-toolbar { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:22px; }
+
+/* Scaled preview wrapper so A4 fits small screens */
+.cert-scale { width:100%; max-width:1080px; overflow:auto; display:flex; justify-content:center; }
+
+/* A4 landscape: 297 x 210 mm ≈ 1123 x 794 px @96dpi */
+.certificate {
+  width: 1123px; height: 794px; flex:none; position:relative; overflow:hidden;
+  background:
+    radial-gradient(1000px 500px at 15% -10%, rgba(47,107,255,.18), transparent 60%),
+    radial-gradient(900px 500px at 100% 110%, rgba(34,230,255,.16), transparent 60%),
+    linear-gradient(160deg, #070c1c 0%, #0a1330 55%, #060a18 100%);
+  color:#eaf1ff; font-family: var(--font-body);
+  box-shadow: 0 30px 90px rgba(0,0,0,.55);
+  transform-origin: top center;
+}
+/* Ornamental frame */
+.certificate .frame { position:absolute; inset:26px; border:2px solid rgba(255,255,255,.18); border-radius:18px; pointer-events:none; }
+.certificate .frame::before { content:""; position:absolute; inset:10px; border:1px solid rgba(255,255,255,.10); border-radius:12px; }
+.certificate .edge { position:absolute; width:120px; height:120px; pointer-events:none; opacity:.9; }
+.certificate .edge.tl { top:26px; left:26px; border-top:4px solid var(--cyan); border-left:4px solid var(--cyan); border-radius:18px 0 0 0; }
+.certificate .edge.tr { top:26px; right:26px; border-top:4px solid var(--blue-electric); border-right:4px solid var(--blue-electric); border-radius:0 18px 0 0; }
+.certificate .edge.bl { bottom:26px; left:26px; border-bottom:4px solid var(--blue-electric); border-left:4px solid var(--blue-electric); border-radius:0 0 0 18px; }
+.certificate .edge.br { bottom:26px; right:26px; border-bottom:4px solid var(--cyan); border-right:4px solid var(--cyan); border-radius:0 0 18px 0; }
+
+.certificate .glow-orb { position:absolute; border-radius:50%; filter:blur(70px); opacity:.5; }
+.certificate .glow-orb.a { width:300px;height:300px; left:-60px; top:-60px; background:var(--blue-electric); }
+.certificate .glow-orb.b { width:280px;height:280px; right:-60px; bottom:-70px; background:var(--cyan); }
+
+.cert-inner { position:relative; z-index:2; height:100%; padding:70px 84px; display:flex; flex-direction:column; }
+
+.cert-head { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+.cert-brand { display:flex; align-items:center; gap:16px; }
+.cert-logo-plate { background:#ffffff; border-radius:16px; padding:14px 20px; box-shadow:0 12px 34px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.5); display:grid; place-items:center; }
+.cert-logo-plate img { height:64px; width:auto; display:block; }
+.cert-brand .txt b { font-family:var(--font-display); font-size:1.2rem; letter-spacing:.02em; display:block; }
+.cert-brand .txt small { display:block; color:#9fb0d6; font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; margin-top:2px; }
+.cert-ribbon { text-align:right; }
+.cert-ribbon .achv { font-family:var(--font-display); font-weight:700; font-size:1.1rem; }
+.cert-ribbon .medal { font-size:2.6rem; }
+
+.cert-body { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+.cert-body .kicker { letter-spacing:.4em; text-transform:uppercase; color:var(--cyan); font-size:.9rem; }
+.cert-title { font-family:var(--font-display); font-size:2.6rem; font-weight:700; margin:6px 0 26px; letter-spacing:.01em; }
+.cert-awarded { color:#9fb0d6; font-size:1rem; }
+.cert-name { font-family:'Space Grotesk', serif; font-size:4rem; font-weight:700; margin:8px 0 6px; line-height:1;
+  background: var(--grad-primary-diag); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  filter: drop-shadow(0 6px 24px rgba(47,107,255,.35)); }
+.cert-name.gold { background: var(--grad-gold); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+.cert-underline { width:420px; max-width:60%; height:2px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent); margin:8px auto 20px; }
+.cert-desc { color:#c3d0ee; font-size:1.05rem; max-width:60ch; line-height:1.6; }
+.cert-desc b { color:#fff; }
+
+.cert-stats { display:flex; gap:44px; margin-top:26px; }
+.cert-stats .s { text-align:center; }
+.cert-stats .s .v { font-family:var(--font-display); font-weight:700; font-size:1.9rem; color:var(--cyan); }
+.cert-stats .s .l { color:#8fa0c8; font-size:.74rem; text-transform:uppercase; letter-spacing:.12em; margin-top:2px; }
+
+.cert-foot { display:flex; align-items:flex-end; justify-content:space-between; }
+.cert-foot .sign { text-align:center; }
+.cert-foot .sign .sig-name { font-family:'Great Vibes', cursive; font-size:2.2rem; line-height:1; color:#eaf1ff; margin-bottom:2px; }
+.cert-foot .sign .line { width:230px; border-top:1.5px solid rgba(255,255,255,.45); margin:0 auto 8px; }
+.cert-foot .sign small { color:#9fb0d6; font-size:.78rem; display:block; }
+.cert-foot .sign .who { font-family:var(--font-display); font-weight:700; font-size:1.02rem; }
+.cert-verify { display:flex; align-items:center; gap:14px; }
+.cert-verify .qr-frame { padding:8px; border-radius:10px; }
+.cert-verify .vtext { text-align:left; }
+.cert-verify .vtext small { color:#9fb0d6; font-size:.72rem; display:block; }
+.cert-verify .vtext .cid { font-family:var(--font-display); font-weight:700; font-size:.86rem; letter-spacing:.02em; }
+
+.cert-seal { position:absolute; right:150px; bottom:120px; width:120px; height:120px; border-radius:50%;
+  display:grid; place-items:center; text-align:center; font-family:var(--font-display); font-weight:700; font-size:.62rem; letter-spacing:.1em;
+  color:#04122b; background:var(--grad-gold); box-shadow:var(--glow-gold); transform:rotate(-12deg); line-height:1.3; z-index:3; }
+.cert-seal span { font-size:1.4rem; display:block; }
+
+/* Print → real A4 landscape PDF */
+@media print {
+  body { background:#fff !important; }
+  .bg-orbs, .cert-toolbar, .cert-page > .muted, .site-note { display:none !important; }
+  .cert-page { padding:0; }
+  .cert-scale { overflow:visible; }
+  .certificate { transform:none !important; box-shadow:none; }
+  @page { size: A4 landscape; margin:0; }
+}

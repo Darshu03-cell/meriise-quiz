@@ -32,7 +32,7 @@
         <div class="cert-head">
           <div class="cert-brand">
             <div class="cert-logo-plate">
-              <img src="assets/meriise-logo.png" alt="ME-RIISE Foundation"
+              <img src="assets/meriise-logo.webp" alt="ME-RIISE Foundation"
                    onerror="this.onerror=null;this.src='assets/meriise-logo.svg'">
             </div>
             <div class="txt"><b>ME-RIISE QUIZ</b><small>Malnad College of Engineering</small></div>

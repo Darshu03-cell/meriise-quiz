@@ -1,0 +1,102 @@
+/* ============================================================
+   ME-RIISE QUIZ — Student (mobile-first) gameplay
+   ============================================================ */
+.student-shell { max-width: 560px; margin-inline: auto; padding: 16px; min-height: 100vh; display: flex; flex-direction: column; }
+
+.s-topbar { display:flex; align-items:center; justify-content:space-between; padding: 8px 4px 16px; }
+.player-tag { display:flex; align-items:center; gap:10px; }
+.avatar { width:38px; height:38px; border-radius:12px; display:grid; place-items:center; font-weight:700; font-family:var(--font-display); color:#04122b; font-size:0.9rem; }
+.player-tag .meta { line-height:1.1; }
+.player-tag .meta b { font-size:0.92rem; }
+.player-tag .meta small { color:var(--text-400); font-size:0.72rem; }
+.score-pill { font-family:var(--font-display); font-weight:700; }
+.score-pill .n { color: var(--cyan); }
+
+.s-screen { flex:1; display:flex; flex-direction:column; }
+
+/* ---------- Join form ---------- */
+.join-hero { text-align:center; padding: 10px 0 22px; }
+.join-hero .pin-badge { font-family:var(--font-display); letter-spacing:.3em; font-size:1.1rem; color:var(--cyan); }
+
+/* ---------- Lobby ---------- */
+.lobby { text-align:center; padding-top: 8px; }
+.lobby .big-emoji { font-size: 3.4rem; animation: float 3s ease-in-out infinite; }
+.lobby h2 { margin: 10px 0 6px; }
+.pulse-wait { display:inline-flex; align-items:center; gap:10px; margin-top:18px; color:var(--text-300); }
+.pulse-wait .spinner { width:18px;height:18px; }
+.player-chips { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:22px; }
+.player-chip { animation: popIn .4s var(--ease-spring) both; }
+
+/* ---------- Question ---------- */
+.q-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 14px; }
+.q-count { font-family:var(--font-display); font-weight:600; color:var(--text-300); font-size:0.9rem; }
+.timer-ring { position:relative; width:64px; height:64px; flex:none; }
+.timer-ring svg { transform: rotate(-90deg); }
+.timer-ring .track { stroke: rgba(255,255,255,0.12); }
+.timer-ring .bar { stroke: var(--cyan); stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke .3s; filter: drop-shadow(0 0 6px rgba(34,230,255,.6)); }
+.timer-ring .num { position:absolute; inset:0; display:grid; place-items:center; font-family:var(--font-display); font-weight:700; font-size:1.3rem; }
+.timer-ring.warn .bar { stroke: var(--warning); }
+.timer-ring.danger .bar { stroke: var(--danger); }
+.timer-ring.danger .num { animation: countPulse .5s ease infinite; color: var(--danger); }
+
+.q-text { font-family:var(--font-display); font-size: clamp(1.2rem, 5.4vw, 1.7rem); font-weight:700; line-height:1.25; margin: 6px 0 20px; }
+.q-image { width:100%; max-height:180px; object-fit:cover; border-radius:var(--r-md); margin-bottom:16px; }
+
+.answers { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+.answer {
+  --c: var(--a-blue);
+  display:flex; align-items:center; gap:12px; padding: 18px 16px; min-height: 84px;
+  border-radius: var(--r-md); background: var(--c); color:#fff; font-weight:600; font-size:1.02rem;
+  text-align:left; border:2px solid rgba(255,255,255,.15); position:relative; overflow:hidden;
+  transition: transform var(--dur-fast) var(--ease-out), filter var(--dur-fast), opacity var(--dur);
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+}
+.answer:hover { transform: translateY(-3px) scale(1.01); filter: brightness(1.08); }
+.answer:active { transform: scale(.98); }
+.answer .shape { width:26px; height:26px; flex:none; }
+.answer.sel { outline: 3px solid #fff; transform: scale(1.02); }
+.answer.correct { animation: pulseGlow 1s; box-shadow: 0 0 0 3px #fff, 0 0 30px var(--success); }
+.answer.wrong { opacity:.45; }
+.answer.dim { opacity:.4; filter: grayscale(.3); }
+.answer[data-i="0"]{ --c: var(--a-red); }
+.answer[data-i="1"]{ --c: var(--a-blue); }
+.answer[data-i="2"]{ --c: var(--a-yellow); color:#3a2b00; }
+.answer[data-i="3"]{ --c: var(--a-green); }
+.answer .tick { margin-left:auto; font-size:1.3rem; }
+
+/* ---------- Answered / waiting ---------- */
+.waiting-lock { text-align:center; padding-top: 20px; }
+.waiting-lock .lock-emoji { font-size:3rem; animation: popIn .5s var(--ease-spring); }
+.waiting-lock .chosen { display:inline-flex; align-items:center; gap:10px; padding:12px 18px; border-radius:var(--r-pill); margin-top:16px; font-weight:600; }
+
+/* ---------- Reveal feedback ---------- */
+.feedback { text-align:center; padding-top: 16px; animation: scaleIn .4s var(--ease-out); }
+.feedback .badge-big { font-size:4rem; animation: popIn .5s var(--ease-spring); }
+.feedback h2 { margin:6px 0; }
+.feedback.correct h2 { color: var(--success); }
+.feedback.wrong h2 { color: var(--danger); }
+.gain { font-family:var(--font-display); font-weight:700; font-size:2.4rem; margin-top:8px; }
+.gain.correct { color: var(--success); }
+.streak-tag { margin-top:10px; }
+
+/* ---------- Leaderboard (student) ---------- */
+.my-rank-card { text-align:center; padding: 26px; }
+.my-rank-card .rank-num { font-family:var(--font-display); font-size:3.6rem; font-weight:700; line-height:1; }
+.rank-list { display:flex; flex-direction:column; gap:8px; margin-top:18px; }
+.rank-row { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:var(--r-md); background:rgba(255,255,255,.05); }
+.rank-row.me { background: rgba(34,230,255,.14); border:1px solid rgba(34,230,255,.4); }
+.rank-row .pos { font-family:var(--font-display); font-weight:700; width:26px; }
+.rank-row .nm { flex:1; font-weight:600; }
+.rank-row .sc { font-family:var(--font-display); font-weight:700; color:var(--cyan); }
+
+/* ---------- Final ---------- */
+.final { text-align:center; padding-top: 10px; }
+.final .medal { font-size:4.6rem; animation: popIn .6s var(--ease-spring); }
+.final h1 { margin:8px 0; }
+.final .final-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:22px 0; }
+.final .final-stats .stat { padding:16px 10px; }
+.final .final-stats .val { font-size:1.5rem; }
+
+.s-footer { text-align:center; color:var(--text-400); font-size:0.78rem; padding:20px 0 10px; }
+
+@media (min-width: 480px){ .q-text { margin-bottom: 26px; } }

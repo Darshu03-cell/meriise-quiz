@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ME-RIISE QUIZ — Certificate</title>
+  <meta name="theme-color" content="#05070f" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="variables.css">
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="animations.css">
+  <link rel="stylesheet" href="components.css">
+  <link rel="stylesheet" href="certificate.css">
+</head>
+<body class="app-bg">
+  <div class="bg-orbs"><span></span><span></span><span></span><span></span></div>
+
+  <div class="cert-page">
+    <div class="cert-toolbar" id="toolbar"></div>
+    <div class="cert-scale"><div id="certMount"></div></div>
+    <div class="muted site-note" style="margin-top:22px;font-size:.82rem">ME-RIISE Foundation · Malnad College of Engineering — verify authenticity at <a href="verify.html">/verify</a></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="utils.js"></script>
+  <script src="firebase-service.js"></script>
+  <script src="certificate.js"></script>
+</body>
+</html>

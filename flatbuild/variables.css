@@ -1,0 +1,93 @@
+/* ============================================================
+   ME-RIISE QUIZ — Design Tokens
+   Deep Navy · Electric Blue · Cyan · Glassmorphism
+   ============================================================ */
+:root {
+  /* Core palette */
+  --navy-900: #05070f;
+  --navy-800: #0a0f1f;
+  --navy-700: #0f1730;
+  --navy-600: #131d3d;
+  --navy-500: #1b294f;
+
+  --blue-electric: #2f6bff;
+  --blue-bright: #3d8bff;
+  --cyan: #22e6ff;
+  --cyan-soft: #6ff2ff;
+  --violet: #7c5cff;
+  --magenta: #ff4ecd;
+
+  /* Answer accent colors (Kahoot-style) */
+  --a-red: #ff4757;
+  --a-blue: #2f6bff;
+  --a-yellow: #ffca3a;
+  --a-green: #23d18b;
+
+  /* Semantic */
+  --success: #23d18b;
+  --danger: #ff4757;
+  --warning: #ffb020;
+  --gold: #ffd447;
+  --silver: #cfd8e3;
+  --bronze: #e0995e;
+
+  /* Text */
+  --text-100: #ffffff;
+  --text-200: #dce6ff;
+  --text-300: #9fb0d6;
+  --text-400: #6b7aa3;
+  --text-muted: #55618a;
+
+  /* Surfaces (glass) */
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-bg-strong: rgba(255, 255, 255, 0.10);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-border-soft: rgba(255, 255, 255, 0.08);
+
+  /* Gradients */
+  --grad-primary: linear-gradient(135deg, #2f6bff 0%, #22e6ff 100%);
+  --grad-primary-diag: linear-gradient(120deg, #7c5cff 0%, #2f6bff 45%, #22e6ff 100%);
+  --grad-hero: radial-gradient(1200px 600px at 15% -10%, rgba(47,107,255,0.35), transparent 60%),
+               radial-gradient(1000px 500px at 100% 0%, rgba(34,230,255,0.22), transparent 55%),
+               radial-gradient(900px 700px at 50% 120%, rgba(124,92,255,0.25), transparent 60%),
+               linear-gradient(180deg, #070b18 0%, #05070f 100%);
+  --grad-gold: linear-gradient(135deg, #fff1a8, #ffd447 45%, #f0a92b);
+  --grad-danger: linear-gradient(135deg, #ff6b7a, #ff2d55);
+
+  /* Glow shadows */
+  --glow-blue: 0 0 0 1px rgba(47,107,255,0.35), 0 12px 40px rgba(47,107,255,0.35);
+  --glow-cyan: 0 0 30px rgba(34,230,255,0.45);
+  --glow-soft: 0 20px 60px rgba(0,0,0,0.45);
+  --glow-gold: 0 0 40px rgba(255,212,71,0.5);
+
+  /* Radius */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 30px;
+  --r-pill: 999px;
+
+  /* Spacing scale */
+  --sp-1: 6px;
+  --sp-2: 10px;
+  --sp-3: 16px;
+  --sp-4: 24px;
+  --sp-5: 34px;
+  --sp-6: 48px;
+  --sp-7: 68px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 160ms;
+  --dur: 320ms;
+  --dur-slow: 560ms;
+
+  /* Typography */
+  --font-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  --maxw: 1180px;
+  --z-toast: 9000;
+  --z-modal: 8000;
+}
