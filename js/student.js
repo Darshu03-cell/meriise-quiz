@@ -302,41 +302,57 @@
 
   /* ---------------- Final ---------------- */
   function renderFinal(game, player) {
-    if (S.view === 'final') return;
-    S.view = 'final';
-    clearInterval(S.timer);
     if (!player) { renderMissing('The game has ended.'); return; }
     const players = MR.objToArr(game.players).sort((a, b) => b.score - a.score || a.joinedAt - b.joinedAt);
     const rank = player.finalRank || (players.findIndex(p => p.id === pid) + 1);
-    const total = game.totalQuestions || (game.quiz.questions || []).length || 1;
-    const acc = player.accuracy != null ? player.accuracy : MR.util.accuracy(player.correctCount || 0, player.answeredCount || total);
-    const medals = { 1: '🥇', 2: '🥈', 3: '🥉' };
-    const titles = { 1: 'Quiz Champion', 2: 'First Runner-Up', 3: 'Second Runner-Up' };
     const isTop3 = rank <= 3;
 
-    const wrap = el('div', { class: 'final anim-up' });
-    wrap.append(
-      el('div', { class: 'medal' }, medals[rank] || '🎖️'),
-      el('div', { class: 'chip ' + (isTop3 ? 'chip-gold' : 'chip-cyan') }, isTop3 ? titles[rank] : 'Participant'),
-      el('h1', {}, 'Rank #' + rank),
-      el('div', { class: 'muted' }, game.quizTitle));
-    const stats = el('div', { class: 'final-stats' },
-      statTile('⭐', player.score || 0, 'Points'),
-      statTile('🎯', acc + '%', 'Accuracy'),
-      statTile('👥', players.length, 'Players'));
-    wrap.append(stats);
+    if (S.view !== 'final') {
+      S.view = 'final'; S.certShown = false;
+      clearInterval(S.timer);
+      const total = game.totalQuestions || (game.quiz.questions || []).length || 1;
+      const acc = player.accuracy != null ? player.accuracy : MR.util.accuracy(player.correctCount || 0, player.answeredCount || total);
+      const medals = { 1: '🥇', 2: '🥈', 3: '🥉' };
+      const titles = { 1: 'Quiz Champion', 2: 'First Runner-Up', 3: 'Second Runner-Up' };
 
-    const actions = el('div', { class: 'stack gap-2' });
-    if (player.certId) {
-      actions.append(el('a', { class: 'btn btn-gold btn-block btn-lg', href: 'certificate.html?cid=' + player.certId }, '🏅 View My Certificate'));
-    } else {
-      actions.append(el('div', { class: 'pulse-wait', style: 'justify-content:center' }, el('span', { class: 'spinner' }), 'Preparing your certificate…'));
+      const wrap = el('div', { class: 'final anim-up' });
+      wrap.append(
+        el('div', { class: 'medal' }, medals[rank] || '🎖️'),
+        el('div', { class: 'chip ' + (isTop3 ? 'chip-gold' : 'chip-cyan') }, isTop3 ? titles[rank] : 'Participant'),
+        el('h1', {}, 'Rank #' + rank),
+        el('div', { class: 'muted' }, game.quizTitle));
+      wrap.append(el('div', { class: 'final-stats' },
+        statTile('⭐', player.score || 0, 'Points'),
+        statTile('🎯', acc + '%', 'Accuracy'),
+        statTile('👥', players.length, 'Players')));
+      wrap.append(el('div', { class: 'stack gap-2', id: 'finalActions' },
+        el('div', { class: 'pulse-wait', style: 'justify-content:center' }, el('span', { class: 'spinner' }), 'Preparing your certificate…')));
+      swap(wrap);
+      if (isTop3) confetti({ count: 220, duration: 5000 });
     }
-    actions.append(el('a', { class: 'btn btn-ghost btn-block', href: 'index.html' }, 'Back to Home'));
-    wrap.append(actions);
-    swap(wrap);
 
-    if (isTop3) confetti({ count: 220, duration: 5000 });
+    // A certificate is issued for EVERY participant; it may arrive a moment after the
+    // game ends, so we react whenever certId appears — then auto-open the certificate.
+    if (!S.certShown && player.certId) {
+      S.certShown = true;
+      const url = 'certificate.html?cid=' + player.certId;
+      const actions = document.getElementById('finalActions');
+      if (actions) {
+        actions.innerHTML = '';
+        actions.append(
+          el('a', { class: 'btn btn-gold btn-block btn-lg', href: url }, '🏅 View My Certificate'),
+          el('div', { class: 'muted text-center', id: 'certCountdown', style: 'font-size:.85rem' }, 'Opening your certificate…'),
+          el('a', { class: 'btn btn-ghost btn-block', href: 'index.html' }, 'Back to Home'));
+      }
+      let n = 3;
+      clearInterval(S.certTimer);
+      S.certTimer = setInterval(() => {
+        n--;
+        const cd = document.getElementById('certCountdown');
+        if (cd) cd.textContent = n > 0 ? `Opening your certificate in ${n}…` : 'Opening…';
+        if (n <= 0) { clearInterval(S.certTimer); location.href = url; }
+      }, 1000);
+    }
   }
 
   function statTile(ic, val, lbl) {
