@@ -108,9 +108,14 @@
     try {
       await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
       const cert = $('#certificate');
+      // Wait for web fonts (signature script) and all images (QR, logo) so nothing shifts or goes blank.
+      if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) {} }
+      await Promise.all(Array.from(cert.querySelectorAll('img')).map(im =>
+        (im.complete && im.naturalWidth) ? Promise.resolve()
+          : new Promise(res => { im.onload = res; im.onerror = res; setTimeout(res, 4000); })));
       const prev = cert.style.transform; cert.style.transform = 'none';
       const canvas = await html2canvas(cert, {
-        backgroundColor: '#060a18', scale: 2, useCORS: true, imageTimeout: 5000,
+        backgroundColor: '#060a18', scale: 2, useCORS: true, imageTimeout: 8000,
         onclone: (doc) => { doc.querySelectorAll('.glow-orb').forEach(o => { o.style.display = 'none'; }); }
       });
       cert.style.transform = prev;
@@ -122,18 +127,22 @@
     }
   }
 
-  // QR as a data-URL <img> — captured reliably by html2canvas AND print (canvas/table can be dropped).
+  // QR as a data-URL <img> — captured reliably by html2canvas AND print.
+  // The temp element is attached to the DOM so qrcode.js actually paints the canvas.
   function qrImage(text, size) {
     const frame = el('div', { class: 'qr-frame' });
     const img = new Image(size, size);
-    img.width = size; img.height = size; img.alt = 'Verification QR';
+    img.width = size; img.height = size; img.alt = 'Verification QR'; img.style.display = 'block';
     let src = '';
     try {
       if (window.QRCode) {
-        const tmp = document.createElement('div');
+        const tmp = el('div', { style: 'position:fixed;left:-9999px;top:0' });
+        document.body.appendChild(tmp);
         new window.QRCode(tmp, { text, width: size, height: size, correctLevel: window.QRCode.CorrectLevel.M });
         const canvas = tmp.querySelector('canvas');
-        src = canvas ? canvas.toDataURL('image/png') : (tmp.querySelector('img') ? tmp.querySelector('img').src : '');
+        const qi = tmp.querySelector('img');
+        src = canvas ? canvas.toDataURL('image/png') : (qi ? qi.src : '');
+        document.body.removeChild(tmp);
       }
     } catch (e) { src = ''; }
     if (!src) { img.crossOrigin = 'anonymous'; src = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}`; }
