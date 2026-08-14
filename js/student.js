@@ -67,25 +67,44 @@
     const form = el('form', { class: 'glass card-lg', autocomplete: 'off' });
     form.innerHTML = `
       <div class="field"><label>Your Name</label><input class="input" name="name" maxlength="40" placeholder="e.g. Ananya Rao" required></div>
-      <div class="field"><label>College</label><input class="input" name="college" maxlength="60" value="Malnad College of Engineering" required></div>
+      <div class="field"><label>College / Organization Name</label><input class="input" name="college" maxlength="80" placeholder="Your college or organization" value="Malnad College of Engineering" required></div>
       <div class="field"><label>Department</label>
-        <select class="select" name="department" required>
+        <select class="select" name="department" id="deptSelect" required>
           <option value="" disabled selected>Select department</option>
           ${departments.map(d => `<option>${d}</option>`).join('')}
         </select>
       </div>
+      <div class="field hidden" id="deptOtherWrap"><label>Enter your department</label><input class="input" id="deptOther" maxlength="60" placeholder="e.g. Biotechnology"></div>
       <div class="field"><label>Year</label>
-        <select class="select" name="year" required>
+        <select class="select" name="year" id="yearSelect" required>
           <option value="" disabled selected>Select year</option>
           <option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>PG</option>
+          <option>Other</option>
         </select>
       </div>
+      <div class="field hidden" id="yearOtherWrap"><label>Enter your year / details</label><input class="input" id="yearOther" maxlength="40" placeholder="e.g. Diploma 2nd Year"></div>
       <button class="btn btn-primary btn-block btn-lg" type="submit">Join Game 🎮</button>`;
+
+    // "Other" reveals a free-text field for Department and Year
+    const deptSel = form.querySelector('#deptSelect'), deptOtherWrap = form.querySelector('#deptOtherWrap'), deptOther = form.querySelector('#deptOther');
+    const yearSel = form.querySelector('#yearSelect'), yearOtherWrap = form.querySelector('#yearOtherWrap'), yearOther = form.querySelector('#yearOther');
+    deptSel.addEventListener('change', () => {
+      const other = deptSel.value === 'Other';
+      deptOtherWrap.classList.toggle('hidden', !other); deptOther.required = other;
+      if (other) deptOther.focus();
+    });
+    yearSel.addEventListener('change', () => {
+      const other = yearSel.value === 'Other';
+      yearOtherWrap.classList.toggle('hidden', !other); yearOther.required = other;
+      if (other) yearOther.focus();
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const fd = new FormData(form);
-      const player = { name: fd.get('name').trim(), college: fd.get('college').trim(),
-        department: fd.get('department'), year: fd.get('year') };
+      const department = deptSel.value === 'Other' ? (deptOther.value.trim() || 'Other') : deptSel.value;
+      const year = yearSel.value === 'Other' ? (yearOther.value.trim() || 'Other') : yearSel.value;
+      const player = { name: fd.get('name').trim(), college: fd.get('college').trim(), department, year };
       if (!player.name) return;
       const btn = form.querySelector('button'); btn.disabled = true; btn.textContent = 'Joining…';
       try {
