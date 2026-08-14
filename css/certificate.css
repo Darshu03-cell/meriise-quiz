@@ -47,10 +47,11 @@
 .cert-body .kicker { letter-spacing:.4em; text-transform:uppercase; color:var(--cyan); font-size:.9rem; }
 .cert-title { font-family:var(--font-display); font-size:2.6rem; font-weight:700; margin:6px 0 26px; letter-spacing:.01em; }
 .cert-awarded { color:#9fb0d6; font-size:1rem; }
-.cert-name { font-family:'Space Grotesk', serif; font-size:4rem; font-weight:700; margin:8px 0 6px; line-height:1;
-  background: var(--grad-primary-diag); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
-  filter: drop-shadow(0 6px 24px rgba(47,107,255,.35)); }
-.cert-name.gold { background: var(--grad-gold); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+/* Solid colour (NOT background-clip) so it renders correctly in PNG/PDF exports too */
+.cert-name { font-family:'Space Grotesk', serif; font-size:clamp(2.4rem, 6vw, 4rem); font-weight:700;
+  margin:8px 0 6px; line-height:1.06; padding:0 30px; word-break:break-word;
+  color:#eaf1ff; text-shadow:0 4px 24px rgba(47,107,255,.45); }
+.cert-name.gold { color:#ffd35a; text-shadow:0 4px 26px rgba(255,200,60,.45); }
 .cert-underline { width:420px; max-width:60%; height:2px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent); margin:8px auto 20px; }
 .cert-desc { color:#c3d0ee; font-size:1.05rem; max-width:60ch; line-height:1.6; }
 .cert-desc b { color:#fff; }
@@ -72,9 +73,9 @@
 .cert-verify .vtext small { color:#9fb0d6; font-size:.72rem; display:block; }
 .cert-verify .vtext .cid { font-family:var(--font-display); font-weight:700; font-size:.86rem; letter-spacing:.02em; }
 
-.cert-seal { position:absolute; right:150px; bottom:120px; width:120px; height:120px; border-radius:50%;
-  display:grid; place-items:center; text-align:center; font-family:var(--font-display); font-weight:700; font-size:.62rem; letter-spacing:.1em;
-  color:#04122b; background:var(--grad-gold); box-shadow:var(--glow-gold); transform:rotate(-12deg); line-height:1.3; z-index:3; }
+.cert-seal { position:absolute; left:50%; bottom:56px; transform:translateX(-50%) rotate(-8deg); width:112px; height:112px; border-radius:50%;
+  display:grid; place-items:center; text-align:center; font-family:var(--font-display); font-weight:700; font-size:.6rem; letter-spacing:.1em;
+  color:#04122b; background:var(--grad-gold); box-shadow:var(--glow-gold); line-height:1.3; z-index:3; }
 .cert-seal span { font-size:1.4rem; display:block; }
 
 /* Print → real A4 landscape PDF */
