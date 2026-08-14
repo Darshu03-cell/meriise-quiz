@@ -1,0 +1,11 @@
+# Build artifacts (generated for manual zip uploads — not needed for Git deploy)
+flatbuild/
+*.zip
+
+# Dependencies
+node_modules/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/

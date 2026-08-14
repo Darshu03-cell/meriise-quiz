@@ -148,3 +148,34 @@ MR.util = (function () {
   return { $, $$, el, esc, pad, fmtTime, fmtDate, qs, debounce, uid, genPin, initials,
            avatarColor, toast, modal, countTo, confetti, makeQR, copy, downloadFile, toCSV, accuracy };
 })();
+
+/* ============================================================
+   Theme (light / dark) — floating toggle on every page
+   ============================================================ */
+MR.theme = (function () {
+  const KEY = 'mr_theme';
+  const root = document.documentElement;
+  const read = () => { try { return localStorage.getItem(KEY) === 'light' ? 'light' : 'dark'; } catch { return 'dark'; } };
+  const apply = (t) => { if (t === 'light') root.setAttribute('data-theme', 'light'); else root.removeAttribute('data-theme'); };
+  const ICON = {
+    sun:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/><line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/><line x1="5.1" y1="5.1" x2="6.8" y2="6.8"/><line x1="17.2" y1="17.2" x2="18.9" y2="18.9"/><line x1="5.1" y1="18.9" x2="6.8" y2="17.2"/><line x1="17.2" y1="6.8" x2="18.9" y2="5.1"/></svg>',
+    moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'
+  };
+  let btn;
+  const refresh = () => { if (btn) btn.innerHTML = read() === 'light' ? ICON.moon : ICON.sun; };
+  const set = (t) => { try { localStorage.setItem(KEY, t); } catch {} apply(t); refresh(); };
+  const toggle = () => set(read() === 'light' ? 'dark' : 'light');
+  function mount() {
+    apply(read());
+    btn = document.createElement('button');
+    btn.className = 'theme-toggle'; btn.type = 'button';
+    btn.setAttribute('aria-label', 'Toggle light or dark theme');
+    btn.title = 'Toggle light / dark';
+    btn.addEventListener('click', toggle);
+    refresh();
+    document.body.appendChild(btn);
+  }
+  apply(read()); // apply immediately (in case the <head> pre-script was missed)
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
+  return { toggle, set, get: read };
+})();

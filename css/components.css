@@ -163,3 +163,62 @@ table.data tbody tr:hover { background: rgba(255,255,255,0.04); }
 
 /* focus visible */
 :focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+/* ============================================================
+   THEME: LIGHT  (active when <html data-theme="light">)
+   ============================================================ */
+:root[data-theme="light"] {
+  --navy-900:#eef2fb; --navy-800:#e9eefa; --navy-700:#ffffff; --navy-600:#f3f6fd; --navy-500:#e6ecf9;
+  --text-100:#0b1430; --text-200:#26324f; --text-300:#54608a; --text-400:#7a86a6; --text-muted:#9aa3bf;
+  --cyan:#0a9fc4; --cyan-soft:#0784a3;
+  --glass-bg:rgba(255,255,255,0.72); --glass-bg-strong:rgba(255,255,255,0.90);
+  --glass-border:rgba(16,26,64,0.10); --glass-border-soft:rgba(16,26,64,0.06);
+  --glow-soft:0 18px 50px rgba(30,50,100,0.14);
+  --grad-hero:
+    radial-gradient(1200px 600px at 15% -10%, rgba(47,107,255,0.12), transparent 60%),
+    radial-gradient(1000px 500px at 100% 0%, rgba(34,230,255,0.12), transparent 55%),
+    radial-gradient(900px 700px at 50% 120%, rgba(124,92,255,0.10), transparent 60%),
+    linear-gradient(180deg,#eff3fe 0%, #e6ecfa 100%);
+}
+:root[data-theme="light"] .bg-grid { background-image:linear-gradient(rgba(16,26,64,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(16,26,64,.05) 1px,transparent 1px); }
+:root[data-theme="light"] .bg-orbs span { opacity:.20; }
+:root[data-theme="light"] .input,
+:root[data-theme="light"] .select,
+:root[data-theme="light"] textarea.input { background:#fff; border-color:rgba(16,26,64,.14); }
+:root[data-theme="light"] .input:focus { background:#fff; box-shadow:0 0 0 4px rgba(10,159,196,.15); }
+:root[data-theme="light"] .input::placeholder { color:#9aa3bf; }
+:root[data-theme="light"] .select option { background:#fff; color:var(--text-100); }
+:root[data-theme="light"] .chip { background:rgba(16,26,64,.05); border-color:rgba(16,26,64,.08); color:var(--text-200); }
+:root[data-theme="light"] .chip-cyan { color:#0784a3; background:rgba(34,182,232,.14); border-color:rgba(34,182,232,.30); }
+:root[data-theme="light"] .chip-gold { color:#8a6200; background:rgba(230,170,20,.16); border-color:rgba(230,170,20,.40); }
+:root[data-theme="light"] .chip-live { color:#c62b3c; background:rgba(255,71,87,.12); border-color:rgba(255,71,87,.35); }
+:root[data-theme="light"] .progress { background:rgba(16,26,64,.10); }
+:root[data-theme="light"] .modal-close { background:rgba(16,26,64,.06); }
+:root[data-theme="light"] table.data tbody tr:hover { background:rgba(16,26,64,.035); }
+:root[data-theme="light"] ::-webkit-scrollbar-thumb { background:rgba(16,26,64,.18); }
+/* admin surfaces */
+:root[data-theme="light"] .sidebar { background:rgba(255,255,255,.80); border-right-color:rgba(16,26,64,.08); }
+:root[data-theme="light"] .nav-item:hover { background:rgba(16,26,64,.05); }
+:root[data-theme="light"] .mobile-bar { background:rgba(255,255,255,.88); border-bottom-color:rgba(16,26,64,.08); }
+:root[data-theme="light"] .item-actions .btn-ghost { background:rgba(16,26,64,.04); }
+:root[data-theme="light"] .item-actions .btn-ghost:hover { background:rgba(16,26,64,.08); }
+:root[data-theme="light"] .recent-row .ic { background:rgba(16,26,64,.05); }
+:root[data-theme="light"] .login-hint { background:rgba(16,26,64,.04); }
+/* game surfaces */
+:root[data-theme="light"] .lb-bar .track { background:rgba(16,26,64,.08); }
+:root[data-theme="light"] .timer-ring .track,
+:root[data-theme="light"] .host-timer .track { stroke:rgba(16,26,64,.14); }
+:root[data-theme="light"] .rank-row { background:rgba(16,26,64,.04); }
+:root[data-theme="light"] .player-name-chip { background:rgba(16,26,64,.05); border-color:rgba(16,26,64,.08); }
+
+/* ---------- Theme toggle button (all pages) ---------- */
+.theme-toggle {
+  position:fixed; left:16px; bottom:16px; z-index:70;
+  width:44px; height:44px; border-radius:50%; display:grid; place-items:center;
+  color:var(--text-100); background:var(--glass-bg-strong);
+  border:1px solid var(--glass-border); backdrop-filter:blur(14px);
+  box-shadow:var(--glow-soft); transition:transform .2s var(--ease-out), background .2s;
+}
+.theme-toggle:hover { transform:translateY(-2px) rotate(-10deg); }
+.theme-toggle:active { transform:scale(.94); }
+.theme-toggle svg { width:20px; height:20px; }

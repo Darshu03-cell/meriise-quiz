@@ -80,7 +80,7 @@
 /* Print → real A4 landscape PDF */
 @media print {
   body { background:#fff !important; }
-  .bg-orbs, .cert-toolbar, .cert-page > .muted, .site-note { display:none !important; }
+  .bg-orbs, .cert-toolbar, .cert-page > .muted, .site-note, .theme-toggle { display:none !important; }
   .cert-page { padding:0; }
   .cert-scale { overflow:visible; }
   .certificate { transform:none !important; box-shadow:none; }
