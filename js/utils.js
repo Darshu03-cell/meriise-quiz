@@ -162,7 +162,12 @@ MR.theme = (function () {
     moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'
   };
   let btn;
-  const refresh = () => { if (btn) btn.innerHTML = read() === 'light' ? ICON.moon : ICON.sun; };
+  const refresh = () => {
+    if (!btn) return;
+    const light = read() === 'light';
+    // Show the mode you'll switch TO, with a clear label.
+    btn.innerHTML = (light ? ICON.moon : ICON.sun) + '<span class="tt-label">' + (light ? 'Dark' : 'Light') + '</span>';
+  };
   const set = (t) => { try { localStorage.setItem(KEY, t); } catch {} apply(t); refresh(); };
   const toggle = () => set(read() === 'light' ? 'dark' : 'light');
   function mount() {

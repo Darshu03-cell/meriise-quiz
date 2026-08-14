@@ -211,14 +211,17 @@ table.data tbody tr:hover { background: rgba(255,255,255,0.04); }
 :root[data-theme="light"] .rank-row { background:rgba(16,26,64,.04); }
 :root[data-theme="light"] .player-name-chip { background:rgba(16,26,64,.05); border-color:rgba(16,26,64,.08); }
 
-/* ---------- Theme toggle button (all pages) ---------- */
+/* ---------- Theme toggle (labeled pill, all pages) ---------- */
 .theme-toggle {
   position:fixed; left:16px; bottom:16px; z-index:70;
-  width:44px; height:44px; border-radius:50%; display:grid; place-items:center;
-  color:var(--text-100); background:var(--glass-bg-strong);
-  border:1px solid var(--glass-border); backdrop-filter:blur(14px);
-  box-shadow:var(--glow-soft); transition:transform .2s var(--ease-out), background .2s;
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 16px 10px 13px; border-radius:var(--r-pill);
+  color:var(--text-100); font-family:var(--font-display); font-weight:600; font-size:0.9rem;
+  background:var(--glass-bg-strong); border:1px solid var(--glass-border);
+  backdrop-filter:blur(14px); box-shadow:var(--glow-soft);
+  transition:transform .2s var(--ease-out), background .2s, box-shadow .2s;
 }
-.theme-toggle:hover { transform:translateY(-2px) rotate(-10deg); }
-.theme-toggle:active { transform:scale(.94); }
-.theme-toggle svg { width:20px; height:20px; }
+.theme-toggle:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(47,107,255,.35); }
+.theme-toggle:active { transform:scale(.96); }
+.theme-toggle svg { width:18px; height:18px; flex:none; }
+.theme-toggle .tt-label { white-space:nowrap; }
