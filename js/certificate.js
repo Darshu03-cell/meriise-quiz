@@ -127,25 +127,26 @@
     }
   }
 
-  // QR as a data-URL <img> — captured reliably by html2canvas AND print.
-  // The temp element is attached to the DOM so qrcode.js actually paints the canvas.
+  // QR as a self-contained data-URL <img> (qrcode-generator, bundled locally).
+  // No CDN, no <canvas> timing, no CORS — so it renders identically on screen,
+  // in html2canvas PNG export, and in Print / Save-as-PDF.
   function qrImage(text, size) {
     const frame = el('div', { class: 'qr-frame' });
     const img = new Image(size, size);
     img.width = size; img.height = size; img.alt = 'Verification QR'; img.style.display = 'block';
     let src = '';
     try {
-      if (window.QRCode) {
-        const tmp = el('div', { style: 'position:fixed;left:-9999px;top:0' });
-        document.body.appendChild(tmp);
-        new window.QRCode(tmp, { text, width: size, height: size, correctLevel: window.QRCode.CorrectLevel.M });
-        const canvas = tmp.querySelector('canvas');
-        const qi = tmp.querySelector('img');
-        src = canvas ? canvas.toDataURL('image/png') : (qi ? qi.src : '');
-        document.body.removeChild(tmp);
+      if (typeof qrcode === 'function') {
+        const qr = qrcode(0, 'M');          // 0 = auto-size, 'M' = error correction
+        qr.addData(text);
+        qr.make();
+        // Render at ~3× the display size so it stays crisp when scaled down to 96px.
+        const render = Math.max(size * 3, 240);
+        const cell = Math.max(3, Math.floor(render / (qr.getModuleCount() + 8)));
+        src = qr.createDataURL(cell);        // data:image/gif;base64,… (white bg, black modules)
       }
     } catch (e) { src = ''; }
-    if (!src) { img.crossOrigin = 'anonymous'; src = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}`; }
+    if (!src) { src = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}`; }
     img.src = src;
     frame.append(img);
     return frame;
