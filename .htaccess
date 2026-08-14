@@ -1,0 +1,28 @@
+# ME-RIISE QUIZ — cache policy
+# HTML/CSS/JS must revalidate on every load so Git deploys appear immediately
+# (previously the host cached them for 7 days, hiding updates from returning visitors).
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|css|js|json)$">
+    Header set Cache-Control "no-cache, must-revalidate, max-age=0"
+    Header unset Expires
+    Header unset Pragma
+  </FilesMatch>
+  <FilesMatch "\.(png|jpe?g|gif|svg|webp|ico|woff2?)$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html        "access plus 0 seconds"
+  ExpiresByType text/css         "access plus 0 seconds"
+  ExpiresByType application/javascript "access plus 0 seconds"
+  ExpiresByType text/javascript  "access plus 0 seconds"
+  ExpiresByType image/webp       "access plus 1 day"
+  ExpiresByType image/png        "access plus 1 day"
+  ExpiresByType image/svg+xml    "access plus 1 day"
+</IfModule>
+
+# Block access to the deployed .git folder
+RedirectMatch 404 /\.git
