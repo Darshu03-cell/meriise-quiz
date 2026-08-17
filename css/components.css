@@ -87,6 +87,18 @@
 .chip-live .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--a-red); animation: pulseGlow 1.6s infinite; }
 .chip-cyan { background: rgba(34,230,255,0.14); border-color: rgba(34,230,255,0.4); color: var(--cyan-soft); }
 .chip-gold { background: rgba(255,212,71,0.16); border-color: rgba(255,212,71,0.4); color: var(--gold); }
+/* Live "students joined" counter — pulses each time a new student joins */
+.chip-joined { background: rgba(35,209,139,0.16); border-color: rgba(35,209,139,0.42); color: #6ff0b8; }
+.chip-joined .jcount { font-size: 0.98rem; font-weight: 800; color: #baffe0; }
+.chip-joined .jlbl { opacity: .78; font-weight: 600; }
+.chip-joined.bump { animation: chipBump .55s ease; }
+@keyframes chipBump {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.18); box-shadow: 0 0 0 0 rgba(35,209,139,.5); }
+  100% { transform: scale(1); box-shadow: 0 0 0 14px rgba(35,209,139,0); }
+}
+:root[data-theme="light"] .chip-joined { color:#0a7a4d; background:rgba(35,209,139,.14); border-color:rgba(35,209,139,.40); }
+:root[data-theme="light"] .chip-joined .jcount { color:#06623c; }
 
 /* ---------- Brand ---------- */
 .brand { display: inline-flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 700; }

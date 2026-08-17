@@ -6,7 +6,7 @@
   const main = $('#hostMain'), controls = $('#hostControls'), meta = $('#liveMeta');
   const SHAPES = ['▲', '◆', '●', '■'];
 
-  const H = { pin: null, view: '', game: null, timer: null, answersUnsub: null, answers: {}, autoLocked: false };
+  const H = { pin: null, view: '', game: null, timer: null, answersUnsub: null, answers: {}, autoLocked: false, joinedShown: 0 };
 
   $('#fsBtn').addEventListener('click', () => {
     if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
@@ -101,13 +101,16 @@
 
   /* ---------------- Meta bar ---------------- */
   function renderMeta(game) {
-    const players = MR.objToArr(game.players).length;
+    const count = MR.objToArr(game.players).length;
+    const grew = count > H.joinedShown;          // a new student just joined
+    H.joinedShown = count;
     meta.innerHTML = '';
     meta.append(
       el('span', { class: 'chip chip-live' }, el('span', { class: 'dot' }), 'LIVE'),
       el('span', { class: 'chip' }, esc(game.quizTitle)),
       el('span', { class: 'chip chip-cyan mono' }, 'PIN ' + game.pin),
-      el('span', { class: 'chip' }, '👥 ' + players));
+      el('span', { class: 'chip chip-joined' + (grew ? ' bump' : ''), title: 'Students joined' },
+        '👥', el('b', { class: 'jcount' }, String(count)), el('small', { class: 'jlbl' }, 'joined')));
   }
 
   /* ---------------- Lobby ---------------- */
