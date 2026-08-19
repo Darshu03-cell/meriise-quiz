@@ -325,7 +325,15 @@ window.MR = window.MR || {};
     async finalizeResults(pin) {
       const game = await D.get('games/' + pin);
       if (!game) return null;
-      const certMode = game.certMode || (game.issueCertificates === false ? 'off' : 'all'); // 'all' | 'top3' | 'off'
+      // Resolve certificate mode ('all' | 'top3' | 'off'). Prefer the game's stored setting;
+      // for older games created before this field existed, fall back to the quiz's current
+      // setting so "None" is always honored and no unwanted certificates are generated.
+      let certMode = game.certMode;
+      if (!certMode) {
+        const quiz = game.quizId ? await D.get('quizzes/' + game.quizId) : null;
+        certMode = (quiz && quiz.certMode)
+          || ((game.issueCertificates === false || (quiz && quiz.issueCertificates === false)) ? 'off' : 'all');
+      }
       const players = objToArr(game.players).sort((a, b) => b.score - a.score || a.joinedAt - b.joinedAt);
       const total = game.totalQuestions || 1;
       const achievements = ['🥇 Quiz Champion', '🥈 First Runner-Up', '🥉 Second Runner-Up'];
