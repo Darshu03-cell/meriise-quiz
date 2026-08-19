@@ -219,9 +219,10 @@
           el('span', { class: 'chip' }, ico('help'), (q.questions || []).length + ' Q'),
           el('span', { class: 'chip' }, ico('clock'), (q.timePerQuestion || 20) + 's'),
           el('span', { class: 'chip' }, ico('star'), String(q.pointsPerQuestion || 1000)),
-          q.issueCertificates === false
-            ? el('span', { class: 'chip', title: 'Certificates off' }, ico('award'), 'No cert')
-            : el('span', { class: 'chip chip-gold', title: 'Certificates on' }, ico('award'), 'Certificate'),
+          (() => { const cm = q.certMode || (q.issueCertificates === false ? 'off' : 'all');
+            return cm === 'off' ? el('span', { class: 'chip', title: 'No certificates' }, ico('award'), 'No cert')
+              : cm === 'top3' ? el('span', { class: 'chip chip-gold', title: 'Certificates for Top 3 only' }, ico('award'), 'Top 3 certs')
+              : el('span', { class: 'chip chip-gold', title: 'Certificates for everyone' }, ico('award'), 'All certs'); })(),
           q.event ? el('span', { class: 'chip chip-cyan' }, esc(q.event)) : ''),
         el('div', { class: 'item-actions' },
           el('a', { class: 'btn btn-sm btn-primary', href: '#/quiz/' + q.id }, ico('edit'), 'Edit Questions'),
@@ -234,6 +235,7 @@
 
   function quizForm(q) {
     const events = A.cache.events;
+    const mode = q?.certMode || (q?.issueCertificates === false ? 'off' : 'all');
     const body = el('div');
     body.innerHTML = `
       <div class="field"><label>Quiz Title</label><input class="input" id="qz-title" value="${esc(q?.title || '')}" placeholder="Innovation Challenge"></div>
@@ -247,18 +249,29 @@
         <div class="field grow"><label>Points / question</label><input class="input" id="qz-points" type="number" min="100" step="100" value="${q?.pointsPerQuestion || 1000}"></div>
       </div>
       <div class="field"><label>Description</label><textarea class="input" id="qz-desc" rows="2">${esc(q?.description || '')}</textarea></div>
-      <label class="check-line">
-        <input type="checkbox" id="qz-cert" ${q?.issueCertificates === false ? '' : 'checked'}>
-        <span class="ck-txt"><b>Issue certificates</b><small>Give every participant a certificate at the end (Top 3 get achievement certificates). Turn off for practice rounds or quizzes that don't need certificates.</small></span>
-      </label>`;
+      <div class="field"><label>Certificates</label>
+        <label class="check-line">
+          <input type="radio" name="certmode" value="all" ${mode === 'all' ? 'checked' : ''}>
+          <span class="ck-txt"><b>🏅 Everyone</b><small>Every participant gets a certificate; Top 3 get achievement certificates (🥇 🥈 🥉).</small></span>
+        </label>
+        <label class="check-line">
+          <input type="radio" name="certmode" value="top3" ${mode === 'top3' ? 'checked' : ''}>
+          <span class="ck-txt"><b>🏆 Top 3 winners only</b><small>Only the top 3 get achievement certificates. Everyone else just sees their score & rank.</small></span>
+        </label>
+        <label class="check-line">
+          <input type="radio" name="certmode" value="off" ${mode === 'off' ? 'checked' : ''}>
+          <span class="ck-txt"><b>🚫 None</b><small>No certificates — great for practice rounds.</small></span>
+        </label>
+      </div>`;
     modal({
       title: q ? 'Quiz Settings' : 'New Quiz', body,
       actions: [{ label: 'Cancel', class: 'btn-ghost', onClick: c => c() },
         { label: q ? 'Save' : 'Create & Add Questions', class: 'btn-primary', onClick: async (c) => {
           const ev = A.cache.events.find(e => e.id === $('#qz-event').value);
+          const certMode = $('input[name="certmode"]:checked')?.value || 'all';
           const data = { title: $('#qz-title').value.trim(), eventId: ev?.id || '', event: ev?.name || '',
             timePerQuestion: +$('#qz-time').value || 20, pointsPerQuestion: +$('#qz-points').value || 1000,
-            description: $('#qz-desc').value.trim(), issueCertificates: $('#qz-cert').checked };
+            description: $('#qz-desc').value.trim(), certMode, issueCertificates: certMode !== 'off' };
           if (!data.title) return toast('Title required', 'err');
           if (q) { await MR.game.updateQuiz(q.id, data); toast('Saved', 'ok'); c(); }
           else { const id = await MR.game.createQuiz(data); toast('Quiz created', 'ok'); c(); location.hash = '#/quiz/' + id; }

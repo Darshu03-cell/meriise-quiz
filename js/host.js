@@ -297,7 +297,10 @@
     });
     wrap.append(podium);
     if (players.length > 3) {
-      const certNote = game.issueCertificates !== false ? ' — certificates ready for everyone' : '';
+      const certMode = game.certMode || (game.issueCertificates === false ? 'off' : 'all');
+      const certNote = certMode === 'all' ? ' — certificates ready for everyone'
+        : certMode === 'top3' ? ' — certificates awarded to the Top 3'
+        : '';
       wrap.append(el('div', { class: 'muted', style: 'margin-top:30px' }, `+ ${players.length - 3} more participants${certNote}`));
     }
     main.innerHTML = ''; main.append(wrap);

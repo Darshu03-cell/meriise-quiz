@@ -205,9 +205,10 @@ window.MR = window.MR || {};
     async createGame(quiz, hostId = 'host') {
       let pin, exists = true, tries = 0;
       while (exists && tries++ < 12) { pin = MR.util.genPin(); exists = !!(await D.get('games/' + pin + '/pin')); }
+      const certMode = quiz.certMode || (quiz.issueCertificates === false ? 'off' : 'all'); // 'all' | 'top3' | 'off'
       const game = {
         pin, quizId: quiz.id, quizTitle: quiz.title, event: quiz.event || '', hostId,
-        issueCertificates: quiz.issueCertificates !== false,   // default on unless explicitly disabled
+        certMode, issueCertificates: certMode !== 'off',
         status: 'lobby', currentIndex: -1, totalQuestions: (quiz.questions || []).length,
         timePerQuestion: quiz.timePerQuestion || 20, pointsPerQuestion: quiz.pointsPerQuestion || 1000,
         quiz: { title: quiz.title, event: quiz.event || '', questions: quiz.questions || [],
@@ -324,7 +325,7 @@ window.MR = window.MR || {};
     async finalizeResults(pin) {
       const game = await D.get('games/' + pin);
       if (!game) return null;
-      const issueCerts = game.issueCertificates !== false;   // per-quiz toggle (default on)
+      const certMode = game.certMode || (game.issueCertificates === false ? 'off' : 'all'); // 'all' | 'top3' | 'off'
       const players = objToArr(game.players).sort((a, b) => b.score - a.score || a.joinedAt - b.joinedAt);
       const total = game.totalQuestions || 1;
       const achievements = ['🥇 Quiz Champion', '🥈 First Runner-Up', '🥉 Second Runner-Up'];
@@ -339,8 +340,9 @@ window.MR = window.MR || {};
           event: game.event || '', quiz: game.quizTitle, rank, score: p.score || 0,
           accuracy: acc, achievement, pin, playerId: p.id, issuedAt: Date.now()
         };
+        const wantCert = certMode === 'all' || (certMode === 'top3' && rank <= 3);
         const playerUpdate = { finalRank: rank, accuracy: acc, achievement };
-        if (issueCerts) {
+        if (wantCert) {
           const certId = `MR-${pin}-${MR.util.pad(rank, 3)}-${MR.util.uid(4)}`;
           row.id = certId; row.verified = true;
           await D.set('certificates/' + certId, row);
@@ -349,7 +351,7 @@ window.MR = window.MR || {};
         await D.update(`games/${pin}/players/${p.id}`, playerUpdate);
         rows.push(row);
       }
-      await D.set('results/' + pin, { pin, quiz: game.quizTitle, event: game.event || '', certificates: issueCerts,
+      await D.set('results/' + pin, { pin, quiz: game.quizTitle, event: game.event || '', certMode, certificates: certMode !== 'off',
         totalPlayers: players.length, totalQuestions: total, finishedAt: Date.now(), leaderboard: rows });
       await D.update('games/' + pin, { resultsReady: true });
       return rows;

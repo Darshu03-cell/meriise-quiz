@@ -325,7 +325,8 @@
     const players = MR.objToArr(game.players).sort((a, b) => b.score - a.score || a.joinedAt - b.joinedAt);
     const rank = player.finalRank || (players.findIndex(p => p.id === pid) + 1);
     const isTop3 = rank <= 3;
-    const issueCerts = game.issueCertificates !== false;
+    const certMode = game.certMode || (game.issueCertificates === false ? 'off' : 'all');
+    const issueCerts = certMode === 'all' || (certMode === 'top3' && isTop3); // will THIS player get a certificate?
 
     if (S.view !== 'final') {
       S.view = 'final'; S.certShown = false;
