@@ -325,8 +325,6 @@
     const players = MR.objToArr(game.players).sort((a, b) => b.score - a.score || a.joinedAt - b.joinedAt);
     const rank = player.finalRank || (players.findIndex(p => p.id === pid) + 1);
     const isTop3 = rank <= 3;
-    const certMode = game.certMode || (game.issueCertificates === false ? 'off' : 'all');
-    const issueCerts = certMode === 'all' || (certMode === 'top3' && isTop3); // will THIS player get a certificate?
 
     if (S.view !== 'final') {
       S.view = 'final'; S.certShown = false;
@@ -347,16 +345,15 @@
         statTile('🎯', acc + '%', 'Accuracy'),
         statTile('👥', players.length, 'Players')));
       wrap.append(el('div', { class: 'stack gap-2', id: 'finalActions' },
-        issueCerts
-          ? el('div', { class: 'pulse-wait', style: 'justify-content:center' }, el('span', { class: 'spinner' }), 'Preparing your certificate…')
-          : el('a', { class: 'btn btn-primary btn-block btn-lg', href: 'index.html' }, '🏠 Back to Home')));
+        el('a', { class: 'btn btn-primary btn-block btn-lg', href: 'index.html' }, '🏠 Back to Home')));
       swap(wrap);
       if (isTop3) confetti({ count: 220, duration: 5000 });
     }
 
-    // When certificates are enabled, one is issued for EVERY participant; it may arrive a
-    // moment after the game ends, so we react whenever certId appears — then auto-open it.
-    if (issueCerts && !S.certShown && player.certId) {
+    // Certificates are NOT issued automatically. If the admin later chooses to generate
+    // them, a certId appears on this player — only then do we offer the certificate link
+    // (no forced redirect; the student taps it if they want it).
+    if (!S.certShown && player.certId) {
       S.certShown = true;
       const url = 'certificate.html?cid=' + player.certId;
       const actions = document.getElementById('finalActions');
@@ -364,17 +361,8 @@
         actions.innerHTML = '';
         actions.append(
           el('a', { class: 'btn btn-gold btn-block btn-lg', href: url }, '🏅 View My Certificate'),
-          el('div', { class: 'muted text-center', id: 'certCountdown', style: 'font-size:.85rem' }, 'Opening your certificate…'),
           el('a', { class: 'btn btn-ghost btn-block', href: 'index.html' }, 'Back to Home'));
       }
-      let n = 3;
-      clearInterval(S.certTimer);
-      S.certTimer = setInterval(() => {
-        n--;
-        const cd = document.getElementById('certCountdown');
-        if (cd) cd.textContent = n > 0 ? `Opening your certificate in ${n}…` : 'Opening…';
-        if (n <= 0) { clearInterval(S.certTimer); location.href = url; }
-      }, 1000);
     }
   }
 

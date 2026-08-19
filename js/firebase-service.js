@@ -322,18 +322,12 @@ window.MR = window.MR || {};
     onAnswers(pin, index, cb) { return D.on(`games/${pin}/answers/${index}`, v => cb(v || {})); },
 
     /* ---------- Results & certificates ---------- */
+    // Runs automatically when a game ends. Computes ranks/accuracy/achievement and the
+    // leaderboard for the podium + CSV export. It NEVER creates certificates — those are
+    // generated only when the admin explicitly asks (see generateCertificates below).
     async finalizeResults(pin) {
       const game = await D.get('games/' + pin);
       if (!game) return null;
-      // Resolve certificate mode ('all' | 'top3' | 'off'). Prefer the game's stored setting;
-      // for older games created before this field existed, fall back to the quiz's current
-      // setting so "None" is always honored and no unwanted certificates are generated.
-      let certMode = game.certMode;
-      if (!certMode) {
-        const quiz = game.quizId ? await D.get('quizzes/' + game.quizId) : null;
-        certMode = (quiz && quiz.certMode)
-          || ((game.issueCertificates === false || (quiz && quiz.issueCertificates === false)) ? 'off' : 'all');
-      }
       const players = objToArr(game.players).sort((a, b) => b.score - a.score || a.joinedAt - b.joinedAt);
       const total = game.totalQuestions || 1;
       const achievements = ['🥇 Quiz Champion', '🥈 First Runner-Up', '🥉 Second Runner-Up'];
@@ -343,26 +337,60 @@ window.MR = window.MR || {};
         const rank = i + 1;
         const acc = MR.util.accuracy(p.correctCount || 0, p.answeredCount || total);
         const achievement = rank <= 3 ? achievements[rank - 1] : 'Participant';
+        await D.update(`games/${pin}/players/${p.id}`, { finalRank: rank, accuracy: acc, achievement });
+        rows.push({
+          name: p.name, college: p.college, department: p.department, year: p.year,
+          event: game.event || '', quiz: game.quizTitle, rank, score: p.score || 0,
+          accuracy: acc, achievement, pin, playerId: p.id
+        });
+      }
+      await D.set('results/' + pin, { pin, quiz: game.quizTitle, event: game.event || '',
+        certificates: false, totalPlayers: players.length, totalQuestions: total,
+        finishedAt: Date.now(), leaderboard: rows });
+      await D.update('games/' + pin, { resultsReady: true, certsIssued: false });
+      return rows;
+    },
+
+    // Certificates are created ONLY here — an explicit, admin/host-triggered action.
+    // Nothing else in the app writes to certificates/. Returns { created, mode }.
+    async generateCertificates(pin) {
+      const game = await D.get('games/' + pin);
+      if (!game) return { created: 0, mode: 'off' };
+      let certMode = game.certMode;
+      if (!certMode) {
+        const quiz = game.quizId ? await D.get('quizzes/' + game.quizId) : null;
+        certMode = (quiz && quiz.certMode)
+          || ((game.issueCertificates === false || (quiz && quiz.issueCertificates === false)) ? 'off' : 'all');
+      }
+      if (certMode === 'off') return { created: 0, mode: 'off' };
+      const players = objToArr(game.players).sort((a, b) => b.score - a.score || a.joinedAt - b.joinedAt);
+      const total = game.totalQuestions || 1;
+      const achievements = ['🥇 Quiz Champion', '🥈 First Runner-Up', '🥉 Second Runner-Up'];
+      const rows = [];
+      let created = 0;
+      for (let i = 0; i < players.length; i++) {
+        const p = players[i];
+        const rank = i + 1;
+        const acc = p.accuracy != null ? p.accuracy : MR.util.accuracy(p.correctCount || 0, p.answeredCount || total);
+        const achievement = rank <= 3 ? achievements[rank - 1] : 'Participant';
         const row = {
           name: p.name, college: p.college, department: p.department, year: p.year,
           event: game.event || '', quiz: game.quizTitle, rank, score: p.score || 0,
-          accuracy: acc, achievement, pin, playerId: p.id, issuedAt: Date.now()
+          accuracy: acc, achievement, pin, playerId: p.id
         };
-        const wantCert = certMode === 'all' || (certMode === 'top3' && rank <= 3);
-        const playerUpdate = { finalRank: rank, accuracy: acc, achievement };
-        if (wantCert) {
-          const certId = `MR-${pin}-${MR.util.pad(rank, 3)}-${MR.util.uid(4)}`;
-          row.id = certId; row.verified = true;
+        const inScope = certMode === 'all' || (certMode === 'top3' && rank <= 3);
+        if (inScope) {
+          const certId = p.certId || `MR-${pin}-${MR.util.pad(rank, 3)}-${MR.util.uid(4)}`;
+          row.id = certId; row.issuedAt = Date.now(); row.verified = true;
           await D.set('certificates/' + certId, row);
-          playerUpdate.certId = certId;
+          await D.update(`games/${pin}/players/${p.id}`, { certId, finalRank: rank, accuracy: acc, achievement });
+          created++;
         }
-        await D.update(`games/${pin}/players/${p.id}`, playerUpdate);
         rows.push(row);
       }
-      await D.set('results/' + pin, { pin, quiz: game.quizTitle, event: game.event || '', certMode, certificates: certMode !== 'off',
-        totalPlayers: players.length, totalQuestions: total, finishedAt: Date.now(), leaderboard: rows });
-      await D.update('games/' + pin, { resultsReady: true });
-      return rows;
+      await D.update('results/' + pin, { certificates: true, certMode, leaderboard: rows });
+      await D.update('games/' + pin, { certsIssued: true, certMode });
+      return { created, mode: certMode };
     },
     getResults(pin) { return D.get('results/' + pin); },
     onGames(cb) { return D.on('games', v => cb(objToArr(v).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)))); },

@@ -297,10 +297,7 @@
     });
     wrap.append(podium);
     if (players.length > 3) {
-      const certMode = game.certMode || (game.issueCertificates === false ? 'off' : 'all');
-      const certNote = certMode === 'all' ? ' — certificates ready for everyone'
-        : certMode === 'top3' ? ' — certificates awarded to the Top 3'
-        : '';
+      const certNote = game.certsIssued ? ' — certificates ready to download' : '';
       wrap.append(el('div', { class: 'muted', style: 'margin-top:30px' }, `+ ${players.length - 3} more participants${certNote}`));
     }
     main.innerHTML = ''; main.append(wrap);
@@ -329,6 +326,22 @@
       if (last) add('🏁 Finish & Show Winners', 'btn-gold', () => MR.game.endGame(game.pin));
       else add('➡️ Next Question', 'btn-primary', () => MR.game.startQuestion(game.pin, idx + 1));
     } else if (game.status === 'ended') {
+      const cm = game.certMode || (game.issueCertificates === false ? 'off' : 'all');
+      // Certificates are generated ONLY on this explicit click — never automatically.
+      if (cm !== 'off') {
+        if (game.certsIssued) {
+          add('✅ Certificates Issued', 'btn-ghost', () => toast('Certificates already generated for this game', 'info'));
+        } else {
+          const gb = add(cm === 'top3' ? '🏅 Generate Top 3 Certificates' : '🏅 Generate Certificates', 'btn-gold', async () => {
+            if (!confirm('Generate certificates now? Students will then be able to view and download them.')) return;
+            gb.disabled = true; gb.textContent = 'Generating…';
+            try {
+              const r = await MR.game.generateCertificates(game.pin);
+              toast(r.created ? `${r.created} certificate${r.created > 1 ? 's' : ''} generated` : 'No certificates generated', r.created ? 'ok' : 'err');
+            } catch (e) { toast('Could not generate certificates', 'err'); gb.disabled = false; gb.textContent = '🏅 Generate Certificates'; }
+          });
+        }
+      }
       add('📥 Export CSV', 'btn-cyan', () => exportCSV(game));
       if (MR.SHEETS_WEBHOOK) add('📤 Google Sheets', 'btn-ghost', () => pushSheets(game));
       add('🔁 New Game', 'btn-ghost', () => { location.href = 'host.html'; });

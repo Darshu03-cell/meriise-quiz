@@ -250,17 +250,18 @@
       </div>
       <div class="field"><label>Description</label><textarea class="input" id="qz-desc" rows="2">${esc(q?.description || '')}</textarea></div>
       <div class="field"><label>Certificates</label>
+        <p class="muted" style="font-size:.8rem;margin:-2px 0 10px">Certificates are <b>never</b> created automatically. After a quiz ends you click <b>“Generate Certificates”</b> (on the Host end screen or here in Results). This setting only decides <b>who</b> gets one when you do.</p>
         <label class="check-line">
           <input type="radio" name="certmode" value="all" ${mode === 'all' ? 'checked' : ''}>
-          <span class="ck-txt"><b>🏅 Everyone</b><small>Every participant gets a certificate; Top 3 get achievement certificates (🥇 🥈 🥉).</small></span>
+          <span class="ck-txt"><b>🏅 Everyone</b><small>When you generate, every participant gets a certificate; Top 3 get achievement certificates (🥇 🥈 🥉).</small></span>
         </label>
         <label class="check-line">
           <input type="radio" name="certmode" value="top3" ${mode === 'top3' ? 'checked' : ''}>
-          <span class="ck-txt"><b>🏆 Top 3 winners only</b><small>Only the top 3 get achievement certificates. Everyone else just sees their score & rank.</small></span>
+          <span class="ck-txt"><b>🏆 Top 3 winners only</b><small>When you generate, only the top 3 get achievement certificates. Everyone else just sees their score & rank.</small></span>
         </label>
         <label class="check-line">
           <input type="radio" name="certmode" value="off" ${mode === 'off' ? 'checked' : ''}>
-          <span class="ck-txt"><b>🚫 None</b><small>No certificates — great for practice rounds.</small></span>
+          <span class="ck-txt"><b>🚫 None</b><small>No certificates for this quiz — the Generate button is hidden.</small></span>
         </label>
       </div>`;
     modal({
@@ -403,8 +404,12 @@
 
   async function viewResultDetail(root, pin) {
     const g = A.cache.games.find(x => x.pin === pin);
+    const cm = g ? (g.certMode || (g.issueCertificates === false ? 'off' : 'all')) : 'all';
     root.append(pageHead('Results · ' + pin, g ? esc(g.quizTitle) : '',
       [el('a', { class: 'btn btn-ghost', href: '#/results' }, ico('arrowLeft'), 'Back'),
+       // Certificates are created ONLY on this explicit click — never automatically.
+       ...(cm !== 'off' ? [el('button', { class: 'btn btn-gold', onClick: () => genCerts(root, pin) },
+            ico('award'), g?.certsIssued ? 'Regenerate Certificates' : 'Generate Certificates')] : []),
        el('button', { class: 'btn btn-cyan', onClick: () => exportGame(pin) }, ico('download'), 'Export CSV'),
        ...(MR.SHEETS_WEBHOOK ? [el('button', { class: 'btn btn-ghost', onClick: () => pushGame(pin) }, ico('upload'), 'Sheets')] : [])]));
     const wrap = el('div', { class: 'table-wrap glass' }); root.append(wrap);
@@ -423,6 +428,16 @@
         ? el('a', { class: 'btn btn-sm btn-ghost', href: 'certificate.html?cid=' + c.id, target: '_blank' }, ico('award'), 'View')
         : el('span', { class: 'muted' }, '—')))));
     table.append(tb); wrap.append(table);
+  }
+
+  async function genCerts(root, pin) {
+    if (!confirm('Generate certificates for this game now? Students will then be able to view and download them.')) return;
+    toast('Generating certificates…', 'info');
+    try {
+      const r = await MR.game.generateCertificates(pin);
+      toast(r.created ? `${r.created} certificate${r.created > 1 ? 's' : ''} generated` : 'No certificates generated (mode is None)', r.created ? 'ok' : 'err');
+      root.innerHTML = ''; viewResultDetail(root, pin);   // refresh so the View links appear
+    } catch (e) { toast('Could not generate certificates', 'err'); }
   }
 
   /* ---------------- Analytics ---------------- */
