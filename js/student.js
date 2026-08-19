@@ -325,6 +325,7 @@
     const players = MR.objToArr(game.players).sort((a, b) => b.score - a.score || a.joinedAt - b.joinedAt);
     const rank = player.finalRank || (players.findIndex(p => p.id === pid) + 1);
     const isTop3 = rank <= 3;
+    const issueCerts = game.issueCertificates !== false;
 
     if (S.view !== 'final') {
       S.view = 'final'; S.certShown = false;
@@ -345,14 +346,16 @@
         statTile('🎯', acc + '%', 'Accuracy'),
         statTile('👥', players.length, 'Players')));
       wrap.append(el('div', { class: 'stack gap-2', id: 'finalActions' },
-        el('div', { class: 'pulse-wait', style: 'justify-content:center' }, el('span', { class: 'spinner' }), 'Preparing your certificate…')));
+        issueCerts
+          ? el('div', { class: 'pulse-wait', style: 'justify-content:center' }, el('span', { class: 'spinner' }), 'Preparing your certificate…')
+          : el('a', { class: 'btn btn-primary btn-block btn-lg', href: 'index.html' }, '🏠 Back to Home')));
       swap(wrap);
       if (isTop3) confetti({ count: 220, duration: 5000 });
     }
 
-    // A certificate is issued for EVERY participant; it may arrive a moment after the
-    // game ends, so we react whenever certId appears — then auto-open the certificate.
-    if (!S.certShown && player.certId) {
+    // When certificates are enabled, one is issued for EVERY participant; it may arrive a
+    // moment after the game ends, so we react whenever certId appears — then auto-open it.
+    if (issueCerts && !S.certShown && player.certId) {
       S.certShown = true;
       const url = 'certificate.html?cid=' + player.certId;
       const actions = document.getElementById('finalActions');

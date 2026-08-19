@@ -219,6 +219,9 @@
           el('span', { class: 'chip' }, ico('help'), (q.questions || []).length + ' Q'),
           el('span', { class: 'chip' }, ico('clock'), (q.timePerQuestion || 20) + 's'),
           el('span', { class: 'chip' }, ico('star'), String(q.pointsPerQuestion || 1000)),
+          q.issueCertificates === false
+            ? el('span', { class: 'chip', title: 'Certificates off' }, ico('award'), 'No cert')
+            : el('span', { class: 'chip chip-gold', title: 'Certificates on' }, ico('award'), 'Certificate'),
           q.event ? el('span', { class: 'chip chip-cyan' }, esc(q.event)) : ''),
         el('div', { class: 'item-actions' },
           el('a', { class: 'btn btn-sm btn-primary', href: '#/quiz/' + q.id }, ico('edit'), 'Edit Questions'),
@@ -243,7 +246,11 @@
         <div class="field grow"><label>Time / question (sec)</label><input class="input" id="qz-time" type="number" min="5" max="120" value="${q?.timePerQuestion || 20}"></div>
         <div class="field grow"><label>Points / question</label><input class="input" id="qz-points" type="number" min="100" step="100" value="${q?.pointsPerQuestion || 1000}"></div>
       </div>
-      <div class="field"><label>Description</label><textarea class="input" id="qz-desc" rows="2">${esc(q?.description || '')}</textarea></div>`;
+      <div class="field"><label>Description</label><textarea class="input" id="qz-desc" rows="2">${esc(q?.description || '')}</textarea></div>
+      <label class="check-line">
+        <input type="checkbox" id="qz-cert" ${q?.issueCertificates === false ? '' : 'checked'}>
+        <span class="ck-txt"><b>Issue certificates</b><small>Give every participant a certificate at the end (Top 3 get achievement certificates). Turn off for practice rounds or quizzes that don't need certificates.</small></span>
+      </label>`;
     modal({
       title: q ? 'Quiz Settings' : 'New Quiz', body,
       actions: [{ label: 'Cancel', class: 'btn-ghost', onClick: c => c() },
@@ -251,7 +258,7 @@
           const ev = A.cache.events.find(e => e.id === $('#qz-event').value);
           const data = { title: $('#qz-title').value.trim(), eventId: ev?.id || '', event: ev?.name || '',
             timePerQuestion: +$('#qz-time').value || 20, pointsPerQuestion: +$('#qz-points').value || 1000,
-            description: $('#qz-desc').value.trim() };
+            description: $('#qz-desc').value.trim(), issueCertificates: $('#qz-cert').checked };
           if (!data.title) return toast('Title required', 'err');
           if (q) { await MR.game.updateQuiz(q.id, data); toast('Saved', 'ok'); c(); }
           else { const id = await MR.game.createQuiz(data); toast('Quiz created', 'ok'); c(); location.hash = '#/quiz/' + id; }
@@ -399,7 +406,9 @@
       el('td', {}, esc(c.name)), el('td', {}, esc(c.department)),
       el('td', { class: 'mono' }, String(c.score)), el('td', { class: 'mono' }, c.accuracy + '%'),
       el('td', {}, esc(c.achievement)),
-      el('td', {}, el('a', { class: 'btn btn-sm btn-ghost', href: 'certificate.html?cid=' + c.id, target: '_blank' }, ico('award'), 'View')))));
+      el('td', {}, c.id
+        ? el('a', { class: 'btn btn-sm btn-ghost', href: 'certificate.html?cid=' + c.id, target: '_blank' }, ico('award'), 'View')
+        : el('span', { class: 'muted' }, '—')))));
     table.append(tb); wrap.append(table);
   }
 

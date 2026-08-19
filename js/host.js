@@ -297,7 +297,8 @@
     });
     wrap.append(podium);
     if (players.length > 3) {
-      wrap.append(el('div', { class: 'muted', style: 'margin-top:30px' }, `+ ${players.length - 3} more participants — certificates ready for everyone`));
+      const certNote = game.issueCertificates !== false ? ' — certificates ready for everyone' : '';
+      wrap.append(el('div', { class: 'muted', style: 'margin-top:30px' }, `+ ${players.length - 3} more participants${certNote}`));
     }
     main.innerHTML = ''; main.append(wrap);
     confetti({ count: 260, duration: 6000 });
