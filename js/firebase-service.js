@@ -145,6 +145,7 @@ window.MR = window.MR || {};
     const A = () => (MR.auth = MR.auth || firebase.auth()); // lazy: only created when admin uses it
     return {
       login: (email, pw) => A().signInWithEmailAndPassword(email, pw),
+      resetPassword: (email) => A().sendPasswordResetEmail(email),
       logout: () => A().signOut(),
       onChange: (cb) => A().onAuthStateChanged(u => cb(u ? { email: u.email, uid: u.uid } : null)),
       current: () => { const u = A().currentUser; return u ? { email: u.email, uid: u.uid } : null; }

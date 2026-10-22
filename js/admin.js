@@ -47,16 +47,32 @@
         <div class="field"><label>Password</label><input class="input" name="password" type="password" placeholder="••••••••" required></div>
         <button class="btn btn-primary btn-block btn-lg" type="submit" id="loginBtn">Sign In →</button>
       </form>
+      ${demo ? '' : '<button class="muted" type="button" id="resetPasswordBtn" style="margin-top:12px">Forgot password?</button>'}
       ${demo ? `<div class="login-hint">🔑 <b>Demo mode</b> — email <b>admin@meriise.in</b> · password <b>meriise123</b></div>` : ''}
       <div style="margin-top:16px"><a class="muted" href="index.html" style="font-size:.85rem">← Back to home</a></div>`;
     const wrap = el('div', { class: 'login-wrap' }, card);
     app.append(wrap);
+    if (!demo) $('#resetPasswordBtn').addEventListener('click', async () => {
+      const email = $('#loginForm [name="email"]').value.trim();
+      if (!email) { toast('Enter your admin email first.', 'err'); return; }
+      try {
+        await MR.authSvc.resetPassword(email);
+        toast('If an account exists for that email, password reset instructions have been sent.', 'ok');
+      } catch {
+        toast('Could not send a reset email. Check the email address and Firebase Email/Password settings.', 'err');
+      }
+    });
     $('#loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
       const btn = $('#loginBtn'); btn.disabled = true; btn.textContent = 'Signing in…';
       try { await MR.authSvc.login(fd.get('email'), fd.get('password')); }
-      catch (err) { toast(err.message || 'Login failed', 'err'); btn.disabled = false; btn.textContent = 'Sign In →'; }
+      catch (err) {
+        const message = err.code === 'auth/invalid-credential'
+          ? 'Email or password was not accepted. Confirm the admin account exists in this Firebase project, or use Forgot password? to reset it.'
+          : err.message || 'Login failed';
+        toast(message, 'err'); btn.disabled = false; btn.textContent = 'Sign In →';
+      }
     });
   }
 
